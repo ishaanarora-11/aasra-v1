@@ -1,7 +1,16 @@
 import Image from "next/image";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
+
 
 export default function Home() {
   return (
+    <ClerkProvider>
     <div className="min-h-screen relative">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
@@ -26,10 +35,13 @@ export default function Home() {
         Aasra is an AI-powered platform designed to assist PG students with healthy eating, emotional support, and managing food-related anxiety. It offers personalized meal plans, budgeting help, and comforting recipe narration. Aasra creates a supportive community environment, providing both nutritional guidance and emotional well-being for students balancing their academic and personal lives.
         </p>
 
-        <button className="bg-pink-400 hover:bg-pink-500 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg">
-          Get Started!
-        </button>
+        <div className="bg-pink-400 hover:bg-pink-500 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg">
+        <SignedOut>
+            <SignInButton />
+          </SignedOut>
+        </div>
       </div>
     </div>
+    </ClerkProvider>
   );
 }
