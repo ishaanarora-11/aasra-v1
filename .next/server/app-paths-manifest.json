@@ -1,7 +1,7 @@
 {
-  "/recipie-generator/page": "app/recipie-generator/page.js",
-  "/budget/page": "app/budget/page.js",
-  "/progress/page": "app/progress/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/page": "app/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/mood/page": "app/mood/page.js",
+  "/shopping/page": "app/shopping/page.js",
+  "/page": "app/page.js",
+  "/budget/page": "app/budget/page.js"
 }
