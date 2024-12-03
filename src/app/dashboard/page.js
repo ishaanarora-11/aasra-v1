@@ -14,6 +14,15 @@ import {
   IconTableColumn,
 } from "@tabler/icons-react";
 import { div } from "framer-motion/client";
+import { Heart, UserCircle } from 'lucide-react';
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
+
 
 const cards = [
     {
@@ -77,9 +86,46 @@ const Skeleton = () => (
   
   const page = () => {
     return (
+
+      
       <div style={{ background: 'linear-gradient(135deg, pink, green )' }}>
-        <div className="h-20 w-full">Navbar</div>
-        <div className="w-full text-center mb-20 text-7xl font-bold ">
+
+<nav className="fixed w-full z-50">
+      {/* Blur effect background */}
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-lg border-b border-gray-200" />
+
+      {/* Navbar content */}
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo as a button */}
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="flex items-center space-x-2 transition-transform duration-200 hover:scale-105"
+          >
+            <Heart className="w-8 h-8 text-rose-500" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-rose-500 to-purple-600 bg-clip-text text-transparent">
+              Aasra
+            </span>
+          </button>
+
+          {/* Dashboard and Profile */}
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => window.location.href = '/dashboard'}
+              className="px-4 py-2 rounded-lg bg-rose-500 text-white font-medium hover:bg-rose-600 transition-all duration-200 hover:scale-105 shadow-sm"
+            >
+              Dashboard
+            </button>
+            
+              <SignedIn>
+            <UserButton />
+          </SignedIn>
+            
+          </div>
+        </div>
+      </div>
+    </nav>
+        <div className="w-full text-center mb-10 text-7xl font-bold p-20">
           Welcome Home
         </div>
         <div className="flex gap-10 w-screen mt-8">
@@ -125,8 +171,8 @@ const Skeleton = () => (
         <div className="mr-48 mt-16">
 
         <PinContainer
-            title="/ui.aceternity.com"
-            href="https://twitter.com/mannupaaji"
+            title="click"
+            href="/community"
         >
             <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[450px] h-[450px] ">
             <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">
@@ -147,8 +193,8 @@ const Skeleton = () => (
         <div className="ml-48 mt-16">
 
         <PinContainer
-            title="/ui.aceternity.com"
-            href="https://twitter.com/mannupaaji"
+            title="try it!"
+            href="/abc"
         >
             <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[450px] h-[450px] ">
             <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">
@@ -177,8 +223,8 @@ const Skeleton = () => (
         <div className="mr-48 mt-16">
 
         <PinContainer
-            title="/ui.aceternity.com"
-            href="https://twitter.com/mannupaaji"
+            title="try it!"
+            href="/mood"
         >
             <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[450px] h-[450px] ">
             <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">
@@ -199,8 +245,8 @@ const Skeleton = () => (
         <div className="ml-48 mt-16">
 
         <PinContainer
-            title="/ui.aceternity.com"
-            href="https://twitter.com/mannupaaji"
+            title="try it!"
+            href="/progress"
         >
             <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[450px] h-[450px] ">
             <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">

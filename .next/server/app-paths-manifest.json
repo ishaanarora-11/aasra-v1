@@ -1,7 +1,7 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/mood/page": "app/mood/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
   "/shopping/page": "app/shopping/page.js",
-  "/page": "app/page.js",
-  "/budget/page": "app/budget/page.js"
+  "/community/page": "app/community/page.js",
+  "/page": "app/page.js"
 }
