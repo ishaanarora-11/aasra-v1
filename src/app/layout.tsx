@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { GroceryProvider } from '../context/GroceryContext';
 import "./globals.css";
 import {
   ClerkProvider,
@@ -37,7 +38,7 @@ export default function RootLayout({
       <body>
         {/* className={`${geistSans.variable} ${geistMono.variable} antialiased`} */}
           
-          {children}
+        <GroceryProvider>{children}</GroceryProvider>
       </body>
     </html>
     </ClerkProvider>

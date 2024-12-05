@@ -567,9 +567,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Heart, UserCircle } from "lucide-react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { useGrocery } from '../../context/GroceryContext';
 
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
+
 
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
@@ -584,6 +586,7 @@ const generationConfig = {
 };
 
 const BudgetGroceryList = () => {
+  const { setGroceryList } = useGrocery();
   const [budget, setBudget] = useState("");
   const [duration, setDuration] = useState("");
   const [showList, setShowList] = useState(false);
@@ -628,7 +631,8 @@ const BudgetGroceryList = () => {
         the categories can only be :
         Staples,Dairy,Protein,Produce,Beverages,Vegetables,Fruits ,Other
         Make it healthy,
-        be specific`
+        be specific
+        change your output everytime. it has to be balanced diet ingedients`
       );
 
       setLoading(false);
@@ -651,8 +655,10 @@ const BudgetGroceryList = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const aiList = await runAiGeneration();
+    const parsedList = typeof aiList === 'string' ? JSON.parse(aiList) : aiList;
     setAiGeneratedList(aiList);
     setShowList(true);
+    setGroceryList(parsedList);
   };
 
   const calculateGroceryList = () => {

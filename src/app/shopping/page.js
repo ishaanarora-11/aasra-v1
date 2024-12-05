@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ShoppingCart, Check, Package } from 'lucide-react';
+import { useGrocery } from '../../context/GroceryContext';
+
 import { Heart, UserCircle } from 'lucide-react';
 import {
   ClerkProvider,
@@ -12,35 +14,73 @@ import {
   UserButton
 } from '@clerk/nextjs'
 
-
+// import BudgetGroceryList from './budget'
 
 const GroceryChecklist = () => {
-  const [groceryItems, setGroceryItems] = useState({
-    Staples: [
-      { name: 'Bread', price: 45, qty: 2, checked: false, image: 'https://www.bhg.com/thmb/ov2S31znAvSCXqrpgJQ8rwBgzp8=/2250x0/filters:no_upscale():strip_icc()/BHG-milk-bread-4CdeIL1uKGyB5ryU8J_EED-aaa76729c86a413ca7500029edba79f0.jpg'},
-      { name: 'Rice (1 kg)', price: 75, qty: 1, checked: false, image: 'https://media.istockphoto.com/id/153737841/photo/rice.jpg?s=612x612&w=0&k=20&c=lfO7iLT0UsDDzra0uBOsN1rvr2d5OEtrG2uwbts33_c=' },
-      { name: 'Atta (1 kg)', price: 65, qty: 2, checked: false, image: 'https://sudhantira.com/cdn/shop/files/wheat-flour-chakki-atta-1000x1000.jpg?v=1716794054' },
-      { name: 'Cooking Oil (1 L)', price: 180, qty: 1, checked: false, image: 'https://media.post.rvohealth.io/wp-content/uploads/2023/09/woman-holding-cooking-oil-bottle-1296x728-header.jpg' },
-      { name: 'Sugar (1 kg)', price: 55, qty: 1, checked: false, image: 'https://www.tasteofhome.com/wp-content/uploads/2019/11/sugar-shutterstock_615908132.jpg' }
-    ],
-    Dairy: [
-      { name: 'Milk (1 liter)', price: 62, qty: 2, checked: false, image: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/004-soymilk.jpg' },
-      { name: 'Eggs (dozen)', price: 84, qty: 1, checked: false, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Fried_Egg_2.jpg/1200px-Fried_Egg_2.jpg' }
-    ],
-    Protein: [
-      { name: 'Chicken (1 kg)', price: 220, qty: 1, checked: false, image: 'https://www.simplyrecipes.com/thmb/Sw2rWO2l615LjOnmUyDIWjAMDKg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__simply_recipes__uploads__2007__04__honey-glazed-roast-chicken-horiz-a-1800-2057270028084ff2bdb54fcb0f2d3227.jpg' },
-      { name: 'Dal (1 kg)', price: 140, qty: 1, checked: false, image: 'https://ooofarms.com/cdn/shop/products/OOO_Farms_Unpolished_Masoor_Dal.jpg?v=1719233061&width=1500' }
-    ],
-    Produce: [
-      { name: 'Bananas (dozen)', price: 60, qty: 1, checked: false, image: 'https://www.bigbasket.com/media/uploads/p/xxl/10000027_32-fresho-banana-robusta.jpg' },
-      { name: 'Apples (1 kg)', price: 120, qty: 1, checked: false, image: 'https://i0.wp.com/post.medicalnewstoday.com/wp-content/uploads/sites/3/2022/07/what_to_know_apples_green_red_1296x728_header-1024x575.jpg?w=1155&h=1528' },
-      { name: 'Potatoes (1 kg)', price: 40, qty: 1, checked: false, image: 'https://cdn.mos.cms.futurecdn.net/iC7HBvohbJqExqvbKcV3pP-1200-80.jpg' },
-      { name: 'Onions (1 kg)', price: 35, qty: 1, checked: false, image: 'https://www.jiomart.com/images/product/original/590003515/onion-1-kg-product-images-o590003515-p590003515-1-202408070949.jpg?im=Resize=(420,420)' },
-      { name: 'Tomatoes (1 kg)', price: 45, qty: 1, checked: false, image: 'https://www.garden-products.co.uk/wp-content/uploads/2024/02/Tomatoes-scaled.jpeg' }
-    ],
-    Beverages: [
-      { name: 'Tea Powder (250g)', price: 120, qty: 1, checked: false, image: 'https://munnarshop.com/wp-content/uploads/2023/03/Munnar-Dust-Tea-Powder-1.png' }
-    ]
+  const { groceryList } = useGrocery();
+  
+
+  function transformGroceryData(inputData) {
+    // Ensure inputData is an array
+    const data = Array.isArray(inputData) 
+      ? inputData 
+      : (typeof inputData === 'string' ? JSON.parse(inputData) : []);
+  
+    const outputData = {};
+    data.forEach(item => {
+      const { category, name, price, qty } = item;
+      if (!outputData[category]) {
+        outputData[category] = [];
+      }
+      outputData[category].push({
+        name,
+        price,
+        qty,
+        checked: false,
+      });
+    });
+  
+    return outputData;
+  }
+
+  // groceryItems = transformGroceryData(groceryList);
+
+  // const [groceryItems, setGroceryItems] = useState(
+  //   transformGroceryData([groceryList])
+    
+    // {
+    // Staples: [
+    //   { name: 'Bread', price: 45, qty: 2, checked: false, image: 'https://www.bhg.com/thmb/ov2S31znAvSCXqrpgJQ8rwBgzp8=/2250x0/filters:no_upscale():strip_icc()/BHG-milk-bread-4CdeIL1uKGyB5ryU8J_EED-aaa76729c86a413ca7500029edba79f0.jpg'},
+    //   { name: 'Rice (1 kg)', price: 75, qty: 1, checked: false, image: 'https://media.istockphoto.com/id/153737841/photo/rice.jpg?s=612x612&w=0&k=20&c=lfO7iLT0UsDDzra0uBOsN1rvr2d5OEtrG2uwbts33_c=' },
+    //   { name: 'Atta (1 kg)', price: 65, qty: 2, checked: false, image: 'https://sudhantira.com/cdn/shop/files/wheat-flour-chakki-atta-1000x1000.jpg?v=1716794054' },
+    //   { name: 'Cooking Oil (1 L)', price: 180, qty: 1, checked: false, image: 'https://media.post.rvohealth.io/wp-content/uploads/2023/09/woman-holding-cooking-oil-bottle-1296x728-header.jpg' },
+    //   { name: 'Sugar (1 kg)', price: 55, qty: 1, checked: false, image: 'https://www.tasteofhome.com/wp-content/uploads/2019/11/sugar-shutterstock_615908132.jpg' }
+    // ],
+    // Dairy: [
+    //   { name: 'Milk (1 liter)', price: 62, qty: 2, checked: false, image: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/004-soymilk.jpg' },
+    //   { name: 'Eggs (dozen)', price: 84, qty: 1, checked: false, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Fried_Egg_2.jpg/1200px-Fried_Egg_2.jpg' }
+    // ],
+    // Protein: [
+    //   { name: 'Chicken (1 kg)', price: 220, qty: 1, checked: false, image: 'https://www.simplyrecipes.com/thmb/Sw2rWO2l615LjOnmUyDIWjAMDKg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__simply_recipes__uploads__2007__04__honey-glazed-roast-chicken-horiz-a-1800-2057270028084ff2bdb54fcb0f2d3227.jpg' },
+    //   { name: 'Dal (1 kg)', price: 140, qty: 1, checked: false, image: 'https://ooofarms.com/cdn/shop/products/OOO_Farms_Unpolished_Masoor_Dal.jpg?v=1719233061&width=1500' }
+    // ],
+    // Produce: [
+    //   { name: 'Bananas (dozen)', price: 60, qty: 1, checked: false, image: 'https://www.bigbasket.com/media/uploads/p/xxl/10000027_32-fresho-banana-robusta.jpg' },
+    //   { name: 'Apples (1 kg)', price: 120, qty: 1, checked: false, image: 'https://i0.wp.com/post.medicalnewstoday.com/wp-content/uploads/sites/3/2022/07/what_to_know_apples_green_red_1296x728_header-1024x575.jpg?w=1155&h=1528' },
+    //   { name: 'Potatoes (1 kg)', price: 40, qty: 1, checked: false, image: 'https://cdn.mos.cms.futurecdn.net/iC7HBvohbJqExqvbKcV3pP-1200-80.jpg' },
+    //   { name: 'Onions (1 kg)', price: 35, qty: 1, checked: false, image: 'https://www.jiomart.com/images/product/original/590003515/onion-1-kg-product-images-o590003515-p590003515-1-202408070949.jpg?im=Resize=(420,420)' },
+    //   { name: 'Tomatoes (1 kg)', price: 45, qty: 1, checked: false, image: 'https://www.garden-products.co.uk/wp-content/uploads/2024/02/Tomatoes-scaled.jpeg' }
+    // ],
+    // Beverages: [
+    //   { name: 'Tea Powder (250g)', price: 120, qty: 1, checked: false, image: 'https://munnarshop.com/wp-content/uploads/2023/03/Munnar-Dust-Tea-Powder-1.png' }
+    // ]
+    // }
+  // );
+
+  const [groceryItems, setGroceryItems] = useState(() => {
+    return groceryList && groceryList.length > 0 
+      ? transformGroceryData(groceryList) 
+      : {};
   });
 
   const categoryColors = {
@@ -48,8 +88,19 @@ const GroceryChecklist = () => {
     Dairy: { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300' },
     Protein: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300' },
     Produce: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300' },
-    Beverages: { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300' }
+    Beverages: { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300' },
+    Vegetables: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300' },
+    Fruits: { bg: 'bg-pink-100', text: 'text-pink-800', border: 'border-pink-300' },
+    Other: { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-300' }
   };
+
+  const getCategoryColors = (category) => {
+  return categoryColors[category] || { 
+    bg: 'bg-gray-100', 
+    text: 'text-gray-800', 
+    border: 'border-gray-300' 
+  };
+};
 
   const handleCheck = (category, itemIndex) => {
     setGroceryItems(prev => ({
