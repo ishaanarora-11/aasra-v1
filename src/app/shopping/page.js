@@ -67,7 +67,7 @@ const GroceryChecklist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6 ">
       <nav className="fixed w-full z-50">
       {/* Blur effect background */}
       <div className="absolute inset-0 bg-white/70 backdrop-blur-lg border-b border-gray-200" />
@@ -103,7 +103,7 @@ const GroceryChecklist = () => {
         </div>
       </div>
     </nav>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto my-20">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
             <ShoppingCart className="h-10 w-10 text-blue-600" />
