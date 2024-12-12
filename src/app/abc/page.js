@@ -250,15 +250,43 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
+import {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} from "@google/generative-ai";
 import axios from 'axios';
+import { useGrocery } from '../../context/GroceryContext';
+
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
 
 const Page = () => {
+
+  const { groceryList } = useGrocery();
+
   const [showPopup, setShowPopup] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
   const [ingredients, setIngredients] = useState("");
   const [utensils, setUtensils] = useState("");
   const [generatedRecipe, setGeneratedRecipe] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const[loadingLightMeal,setLoadingLightMeal] = useState(false);
+  const[loadingLunch,setLoadingLunch] = useState(false);
+  const[loadingDinner,setLoadingDinner] = useState(false);
+  const[aiIngredientsList,setAiIngredientsList] = useState("");
 
   const handleGenerateRecipe = async () => {
     setIsLoading(true);
@@ -290,6 +318,116 @@ const Page = () => {
 
   const toggleSecret = () => {
     setShowSecret(!showSecret);
+  };
+
+  const runAiGenerationLightMeal = async () => {
+    if (!apiKey) {
+      console.error("API key is not set");
+      return "";
+    }
+
+    setLoadingLightMeal(true);
+    try {
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const response = await chatSession.sendMessage(
+        `based on the grocery list ${JSON.stringify(groceryList)},
+        shortlist some fruits and light ingredients that will make a healthy diet,
+        and can result in a simple dish that a PG student can make.
+        Ensure that the output contains only a list of ingredients seperated by a comma and no other text `
+      );
+
+      setLoadingLightMeal(false);
+      return response.response.text();
+    }catch (error) {
+      console.error("Error generating grocery list:", error);
+      setLoadingLightMeal(false);
+      return "[]"; // Return an empty array if there's an error
+    }
+  };
+  const runAiGenerationLunch = async () => {
+    if (!apiKey) {
+      console.error("API key is not set");
+      return "";
+    }
+
+    setLoadingLunch(true);
+    try {
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const response = await chatSession.sendMessage(
+        `based on the grocery list ${JSON.stringify(groceryList)},
+        shortlist some ingredients that will make a vegetable rich,
+        and can result in a simple dish that a PG student can make.
+        Ensure that the output contains only a list of ingredients seperated by a comma and no other text `
+      );
+
+      setLoadingLunch(false);
+      return response.response.text();
+    }catch (error) {
+      console.error("Error generating grocery list:", error);
+      setLoadingLunch(false);
+      return "[]"; // Return an empty array if there's an error
+    }
+  };
+  const runAiGenerationDinner = async () => {
+    if (!apiKey) {
+      console.error("API key is not set");
+      return "";
+    }
+
+    setLoadingDinner(true);
+    try {
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const response = await chatSession.sendMessage(
+        `based on the grocery list ${JSON.stringify(groceryList)},
+        shortlist some ingredients that will make a protien rich,
+        and can result in a simple dish that a PG student can make.
+        Ensure that the output contains only a list of ingredients seperated by a comma and no other text `
+      );
+
+      setLoadingDinner(false);
+      return response.response.text();
+    }catch (error) {
+      console.error("Error generating grocery list:", error);
+      setLoadingDinner(false);
+      return "[]"; // Return an empty array if there's an error
+    }
+  };
+
+  const handleSubmitLightMeal = async (e) => {
+    e.preventDefault();
+    const aiIngredients = await runAiGenerationLightMeal();
+    // const parsedList = typeof aiList === 'string' ? JSON.parse(aiList) : aiList;
+    setAiIngredientsList(aiIngredients);
+    // setShowList(true);
+    console.log(aiIngredients)
+  };
+  const handleSubmitLunch = async (e) => {
+    e.preventDefault();
+    const aiIngredients = await runAiGenerationLunch();
+    // const parsedList = typeof aiList === 'string' ? JSON.parse(aiList) : aiList;
+    setAiIngredientsList(aiIngredients);
+    // setShowList(true);
+    console.log(aiIngredients)
+  };
+  const handleSubmitDinner = async (e) => {
+    e.preventDefault();
+    const aiIngredients = await runAiGenerationDinner();
+    // const parsedList = typeof aiList === 'string' ? JSON.parse(aiList) : aiList;
+    setAiIngredientsList(aiIngredients);
+    // setShowList(true);
+    console.log(aiIngredients)
   };
 
   // Check if both ingredients and utensils are filled out to enable the buttons
@@ -331,7 +469,7 @@ const Page = () => {
         </div>
       </div>
     </nav>
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 p-20">
       {/* Original Content */}
       <div className="relative h-[300px] mb-8">
         <div className="absolute inset-0 flex flex-col items-center justify-center text-black">
@@ -339,13 +477,36 @@ const Page = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-2 text-center">
             Recipe Generator
           </h1>
-          <p className="text-lg md:text-xl opacity-90">Create delicious recipes instantly</p>
+          <p className="text-lg md:text-xl opacity-90 mb-10">Create delicious recipes instantly</p>
+          <div className="flex gap-10">
+
+          <button 
+          onClick={handleSubmitLightMeal}
+          disabled={loadingLightMeal}
+          className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl hover:from-pink-600 hover:to-purple-600 font-semibold transition-all duration-200 flex items-center justify-center gap-2 mb-5">
+          {loadingLightMeal ? "Generating..." : "Generate A Light Meal"}
+          </button>
+          <button 
+          onClick={handleSubmitLunch}
+          disabled={loadingLunch}
+          className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl hover:from-pink-600 hover:to-purple-600 font-semibold transition-all duration-200 flex items-center justify-center gap-2 mb-5">
+          {loadingLunch ? "Generating..." : "Generate Lunch Recipe"}
+          </button>
+          <button 
+          onClick={handleSubmitDinner}
+          disabled={loadingDinner}
+          className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl hover:from-pink-600 hover:to-purple-600 font-semibold transition-all duration-200 flex items-center justify-center gap-2 mb-5">
+          {loadingDinner ? "Generating..." : "Generate Dinner Recipe"}
+          </button>
+          </div>
+          <p className=" md:text-sm opacity-90 mb-5">[Generates a healthy recipe based on ingredients bought]</p>
+
         </div>
       </div>
 
       {/* Recipe Generator Inputs */}
       <div className="px-4 py-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Enter Ingredients and Utensils</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Dont wanna have what is suggested? Enter Ingredients to generate another one!</h2>
 
         {/* Ingredients Input */}
         <div className="mb-4">

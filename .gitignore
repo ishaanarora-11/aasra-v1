@@ -49,5 +49,5 @@ jspm_packages
 
 .node_modules
 
-
+.env.local
 
