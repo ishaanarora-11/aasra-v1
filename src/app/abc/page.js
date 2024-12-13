@@ -447,8 +447,98 @@ const generationConfig = {
 };
 
 const Page = () => {
+  const [audioLink, setAudioLink] = useState(null);
+  const [isLoading1, setIsLoading1] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function tts(text) {
+    setIsLoading1(true);
+    setError(null);
+    setAudioLink(null); // Clear previous audio
+    
+    try {
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate speech');
+      }
+
+      if (!data.audioFile) {
+        throw new Error('No audio file received from server');
+      }
+
+      // Pre-load the audio to verify it's accessible
+      const audio = new Audio(data.audioFile);
+      await new Promise((resolve, reject) => {
+        audio.onloadeddata = resolve;
+        audio.onerror = () => reject(new Error('Failed to load audio file'));
+        // Set a timeout in case loading takes too long
+        setTimeout(() => reject(new Error('Audio loading timeout')), 10000);
+      });
+
+      setAudioLink(data.audioFile);
+    } catch (error) {
+      console.error('Error details:', error);
+      setError(error.message || 'Failed to generate speech. Please try again.');
+    } finally {
+      setIsLoading1(false);
+    }
+  }
+
+  // function tts(text){
+  //   const recipe_text = text
+    
+  //   const axios = require('axios');
+  //   let data = JSON.stringify({
+  //     "voiceId": "en-IN-shivani",
+  //     "style": "Conversational",
+  //     "text": recipe_text,
+  //     "rate": -50,
+  //     "pitch": -13,
+  //     "sampleRate": 48000,
+  //     "format": "MP3",
+  //     "channelType": "MONO",
+  //     "pronunciationDictionary": {},
+  //     "encodeAsBase64": false,
+  //     "variation": 1,
+  //     "audioDuration": 0,
+  //     "modelVersion": "GEN2"
+  //   });
+    
+  //   let config = {
+  //     method: 'post',
+  //     url: 'https://api.murf.ai/v1/speech/generate',
+  //     headers: { 
+  //       'Content-Type': 'application/json', 
+  //       'Accept': 'application/json',
+  //       'api-key': 'ap2_924f6927-d639-41a1-81d1-2ba28ed7cbfc'
+  //     },
+  //     data : data
+  //   };
+    
+  //   axios(config)
+  //   .then((response) => {
+  //     link = JSON.stringify(response.data.audioFile);
+  //     // This link needs to be added in the html video tag!
+  //     return link;
+    
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  //   }
 
   const { groceryList } = useGrocery();
+
+  const[instr,setinstr] = useState("")
 
   const [showPopup, setShowPopup] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
@@ -461,6 +551,16 @@ const Page = () => {
   const [loadingLunch, setLoadingLunch] = useState(false);
   const [loadingDinner, setLoadingDinner] = useState(false);
   const [secret, setSecret] = useState("");
+
+  async function makeinstr(e){
+    const res = await axios({
+      url:"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyCJf9a0AQ8v7TBrYpGjXBJEJauBMZO3ga4",
+      method:"post",
+      data:{"contents":[{"parts":[{"text":`summarize the instructions to less than 1000 characters of the recipe : ${recipe} and present it in a form of a mom presenting it to her child without any quotes`}]}]}
+    })
+    console.log(res['data']['candidates'][0]['content']['parts'][0]['text'])
+    setinstr((prevData) => [...prevData, res['data']['candidates'][0]['content']['parts'][0]['text']]);
+  }
 
   const handleGenerateRecipe = async () => {
     setIsLoading(true);
@@ -850,15 +950,47 @@ const Page = () => {
             </button>
           )}
 
+
           {/* The Play Button, appears when the form is valid */}
-          {isFormValid && (
-            <button
-              onClick={() => alert("Play something related to the recipe!")} // Customize this
-              className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-6 py-3 rounded-full hover:from-green-500 hover:to-green-700 font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg mt-4"
+           {isFormValid && (
+            // <button
+            //   onClick={() => console.log(tts("ishaan"))} // Customize this
+            //   className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-6 py-3 rounded-full hover:from-green-500 hover:to-green-700 font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg mt-4"
+            // >
+            //   <Play className="text-white mr-2" size={20} />
+            //   Play Recipe Video or Music
+            // </button>
+            <div >
+            <button className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-6 py-3 rounded-full hover:from-green-500 hover:to-green-700 font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg mt-4"
+              onClick={() => {makeinstr, tts(instr)}}
+              disabled={isLoading1}
             >
-              <Play className="text-white mr-2" size={20} />
-              Play Recipe Video or Music
+              {isLoading1 ? 'Generating...' : 'Generate Speech'}
             </button>
+      
+            {error && (
+              <div className="text-red-500 mt-2">
+                {error}
+              </div>
+            )}
+      
+            {audioLink && (
+              <div className="mt-4">
+                <audio 
+                  controls 
+                  className="w-full max-w-md"
+                  onError={(e) => {
+                    console.error('Audio playback error:', e);
+                    setError('Failed to play audio. Please try again.');
+                    setAudioLink(null);
+                  }}
+                >
+                  <source src={audioLink} type="audio/mp3" />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            )}
+          </div>
           )}
         </div>
 
