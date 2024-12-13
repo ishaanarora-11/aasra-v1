@@ -1,9 +1,11 @@
 "use client"
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { use, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Smile, Frown, Zap, Coffee, Brain } from 'lucide-react';
 import { Heart, UserCircle } from 'lucide-react';
+import { useGrocery } from '../../context/GroceryContext';
 import {
   ClerkProvider,
   SignInButton,
@@ -15,8 +17,56 @@ import { div } from 'framer-motion/client';
 
 
 const MoodFood = () => {
+  const [ingredients, setIngredients] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [showRecipe, setShowRecipe] = useState(false);
+  const [ishaan,ishaanchanger] = useState("");
+  const [emo,setemo] = useState("")
+  const { groceryList } = useGrocery();
+  const [loggedData, setLoggedData] = useState([]);
+
+  async function generateIshaan(){
+    const ish = await axios({
+      url:"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyCJf9a0AQ8v7TBrYpGjXBJEJauBMZO3ga4",
+      method:"post",
+      data:{"contents":[{"parts":[{"text":ishaan}]}]}
+    })
+    console.log(ish['data']['candidates'][0]['content']['parts'][0]['text'])
+    console.log(groceryList)
+  }
+  async function genrecipe(e){
+    const res = await axios({
+      url:"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyCJf9a0AQ8v7TBrYpGjXBJEJauBMZO3ga4",
+      method:"post",
+      data:{"contents":[{"parts":[{"text":`This is a list of specific emotions mapped to specific ingredients:
+
+Happy: Category: Fruits  
+Flavor Profile: Sweet  
+Example Foods: Mango, Strawberry, Apple, Banana, Pineapple, Pear, Orange, Peach, Blueberry, Watermelon.
+
+These fruits are typically associated with sweet, fresh flavors, promoting happiness due to their pleasant and refreshing tastes. 
+
+Use this list to think about a food item and its recipe, like a fruit salad or a mocha. Generate a recipe based on the emotional category of ${emo}, considering the grocery list ${JSON.stringify(groceryList)}.
+
+Be confident in the way you present the recipe, and encourage the user on how different ingredients will help them.
+
+Please format the recipe with clear line breaks and avoid using Markdown or special characters like **bold**, and make sure the instructions are less than 1000 characters, rest you choice. Thank you!`}]}]}
+    })
+    console.log(res['data']['candidates'][0]['content']['parts'][0]['text'])
+    setLoggedData((prevData) => [...prevData, res['data']['candidates'][0]['content']['parts'][0]['text']]);
+    setShowRecipe(true);
+  }
+  const formatRecipeText = (text) => {
+    // Split the text by new lines and map each one into a <p> tag
+    return text.split('\n').map((line, index) => {
+      if (line.trim() === '') {
+        return <br key={index} />;
+      }
+      return <p key={index} className="mb-4">{line}</p>;
+    });
+  };
+
 
   const emotions = [
     { id: 'happy', icon: <Smile className="w-6 h-6" />, label: 'Happy', color: 'bg-yellow-200 hover:bg-yellow-300' },
@@ -98,7 +148,7 @@ const MoodFood = () => {
             {emotions.map((emotion) => (
               <Button
                 key={emotion.id}
-                onClick={() => setSelectedEmotion(emotion.id)}
+                onClick={() => {setSelectedEmotion(emotion.id); setemo(emotion.id);genrecipe}}
                 className={`${emotion.color} ${
                   selectedEmotion === emotion.id ? 'ring-4 ring-rose-500' : ''
                 } flex flex-col items-center p-10 rounded-2xl transition-all duration-300 transform hover:-translate-y-1`}
@@ -108,56 +158,55 @@ const MoodFood = () => {
               </Button>
             ))}
           </div>
+          <div className="max-w-md mx-auto p-4">
+          <div className="relative">
+          <div className="text-gray-500 text-sm text-center mb-4">or</div>
+          <div className="relative">
+            <textarea  value = {emo} onChange={(e)=>{
+          setemo(e.target.value)
+        }}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg 
+                        transition-all duration-300 ease-in-out 
+                        focus:outline-none focus:border-blue-500 
+                        hover:border-blue-300 
+                        resize-y min-h-[120px] pr-10"
+              placeholder="tell us how you feel"
+            />
+            <button onClick={genrecipe}
+              className="absolute bottom-5 right-3 bg-green-500 text-white 
+                        py-2 px-4 rounded-full 
+                        hover:bg-green-600 transition-colors duration-300 
+                        text-sm"
+            >
+              Get Your Recipe
+            </button>
+          </div>
+        </div>
+    </div>
 
-          <div className="text-center">
+          {/* <div className="text-center">
             <Button
               onClick={handleSubmit}
               className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300"
             >
               Get Your Recipe!
             </Button>
-          </div>
+          </div> */}
 
-          {showRecipe && (
+          {showRecipe && loggedData.length > 0 && (
             <div className="mt-8 space-y-6 animate-fade-in">
-              <h2 className="text-3xl font-bold text-gray-800">Comfort Tiramisu Recipe</h2>
-              
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                <img
-                  src="https://media.istockphoto.com/id/1398679790/photo/tiramisu-cake-on-white-ceramic-plate.jpg?s=612x612&w=0&k=20&c=2Xoc4JhqSh05A8bbUE1igFQDC-TF7vwT9_cQZWZyHCc="
-                  alt="Tiramisu"
-                  className="object-cover w-full h-full"
-                />
-              </div>
+              <h2 className="text-3xl font-bold text-gray-800">Your Personalised Recipe</h2>
 
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="w-4/5 mx-auto">
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-semibold text-gray-800">Ingredients</h3>
-                  <ul className="list-disc pl-5 space-y-2">
-                    <li>6 egg yolks</li>
-                    <li>1 cup sugar</li>
-                    <li>1¼ cup mascarpone cheese</li>
-                    <li>1¾ cup heavy whipping cream</li>
-                    <li>2 packages ladyfingers</li>
-                    <li>1 cup cold espresso</li>
-                    <li>½ cup coffee liqueur (optional)</li>
-                    <li>Cocoa powder for dusting</li>
-                  </ul>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-semibold text-gray-800">Instructions</h3>
-                  <ol className="list-decimal pl-5 space-y-2">
-                    <li>Whisk egg yolks and sugar until pale and creamy</li>
-                    <li>Add mascarpone cheese and blend until smooth</li>
-                    <li>In a separate bowl, whip the cream until stiff peaks form</li>
-                    <li>Gently fold whipped cream into mascarpone mixture</li>
-                    <li>Combine espresso and coffee liqueur</li>
-                    <li>Quickly dip ladyfingers in coffee mixture and layer in dish</li>
-                    <li>Spread half the mascarpone mixture over ladyfingers</li>
-                    <li>Repeat layers and dust with cocoa powder</li>
-                    <li>Refrigerate for at least 4 hours</li>
-                  </ol>
+                  {loggedData.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-white shadow-md rounded-lg border border-gray-200"
+                    >
+                      {formatRecipeText(item)} {/* Render the formatted recipe */}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -165,6 +214,7 @@ const MoodFood = () => {
         </CardContent>
       </Card>
     </div>
+
     </>
   );
 };

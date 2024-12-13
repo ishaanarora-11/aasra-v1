@@ -1,34 +1,14 @@
 {
   "node": {
-    "7f776dc24856e6ddb0f3a46f2a49c36beabb49fadc": {
+    "7fc3087ef0be60535b32ce55e2ae4dc6c6fea61e8d": {
       "workers": {
-        "app/abc/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsuhaaniagarwal%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227f776dc24856e6ddb0f3a46f2a49c36beabb49fadc%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        },
-        "app/_not-found/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsuhaaniagarwal%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227f776dc24856e6ddb0f3a46f2a49c36beabb49fadc%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        },
-        "app/dashboard/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsuhaaniagarwal%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227f776dc24856e6ddb0f3a46f2a49c36beabb49fadc%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        },
-        "app/community/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsuhaaniagarwal%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227f776dc24856e6ddb0f3a46f2a49c36beabb49fadc%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        },
-        "app/progress/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsuhaaniagarwal%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227f776dc24856e6ddb0f3a46f2a49c36beabb49fadc%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
+        "app/mood/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fashish%2Faasra-v1%2Faasra-v1%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%5B%227fc3087ef0be60535b32ce55e2ae4dc6c6fea61e8d%22%2C%22invalidateCacheAction%22%5D%5D%5D%5D&__client_imported__=true!",
           "async": false
         }
       },
       "layer": {
-        "app/abc/page": "action-browser",
-        "app/_not-found/page": "action-browser",
-        "app/dashboard/page": "action-browser",
-        "app/community/page": "action-browser",
-        "app/progress/page": "action-browser"
+        "app/mood/page": "action-browser"
       }
     }
   },
